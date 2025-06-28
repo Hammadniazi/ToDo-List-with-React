@@ -1,21 +1,51 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "./components/Navbar";
 import { v4 as uuidv4 } from "uuid";
+import { FaEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
 import "./App.css";
 
 function App() {
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState([]);
-  const handleEdit = () => {};
+  useEffect(() => {
+    let todoString = localStorage.getItem("todos");
+    if (todoString) {
+      let todos = JSON.parse(localStorage.getItem("todos"));
+      setTodos(todos);
+    }
+  }, []);
+
+  const saveToLS = (params) => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  };
+
+  const handleEdit = (e, id) => {
+    let t = todos.filter((i) => {
+      return i.id === id;
+    });
+    setTodo(t[0].todo);
+    saveToLS();
+
+    let newTodos = todos.filter((item) => {
+      return item.id !== id;
+    });
+    setTodos(newTodos);
+  };
   const handleDelete = (e, id) => {
     console.log(`The Id is ${id} `);
+    let newTodos = todos.filter((item) => {
+      return item.id !== id;
+    });
+    setTodos(newTodos);
+    saveToLS();
   };
   const handleAdd = () => {
     setTodos([...todos, { id: uuidv4(), todo, isCompleted: false }]);
     setTodo("");
-    console.log(todos);
+    saveToLS();
   };
   const handleChange = (e) => {
     setTodo(e.target.value);
@@ -30,6 +60,7 @@ function App() {
     let newTodos = [...todos];
     newTodos[index].isCompleted = !newTodos[index].isCompleted;
     setTodos(newTodos);
+    saveToLS();
     console.log(newTodos, todo);
   };
 
@@ -37,6 +68,9 @@ function App() {
     <>
       <Navbar />
       <div className="container mx-auto bg-violet-100 my-5 rounded-md p-5 min-h-[80vh] ">
+        <h1 className="text-center text-xl font-bold ">
+          iTask You can make task list here
+        </h1>
         <div className="addTodo my-5">
           <h2 className="todos text-lg font-bold ">Add a Todo</h2>
           <input
@@ -52,7 +86,7 @@ function App() {
             Save
           </button>
         </div>
-        <h2 className="text-xl font-bold">Your ToDos</h2>
+        <h2 className="text-lg font-bold">Your ToDos</h2>
         <div className="todos">
           {todos.length === 0 && <div className="m-5">No Todos to Display</div>}
           {todos.map((item) => {
@@ -61,22 +95,26 @@ function App() {
                 key={item.id}
                 className="todos flex w-1/2 justify-between my-3"
               >
-                <input
-                  name={item.id}
-                  onChange={handleCheckBox}
-                  type="checkbox"
-                  value={item.isCompleted}
-                  id=""
-                />
-                <div className={item.isCompleted ? "line-through" : ""}>
-                  {item.todo}
+                <div className="flex gap-5">
+                  <input
+                    name={item.id}
+                    onChange={handleCheckBox}
+                    type="checkbox"
+                    value={item.isCompleted}
+                    id=""
+                  />
+                  <div className={item.isCompleted ? "line-through" : ""}>
+                    {item.todo}
+                  </div>
                 </div>
                 <div className="buttons">
                   <button
-                    onClick={handleEdit}
+                    onClick={(e) => {
+                      handleEdit(e, item.id);
+                    }}
                     className="bg-violet-800 hover:bg-violet-950 rounded-md px-2 py-1 text-white font-bold mx-1"
                   >
-                    Edit
+                    <FaEdit />
                   </button>
                   <button
                     onClick={(e) => {
@@ -84,7 +122,7 @@ function App() {
                     }}
                     className="bg-violet-800 hover:bg-violet-950 rounded-md px-2 py-1 text-white font-bold mx-1"
                   >
-                    Delete
+                    <MdDelete />
                   </button>
                 </div>
               </div>
