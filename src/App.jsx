@@ -10,6 +10,7 @@ import "./App.css";
 function App() {
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState([]);
+  const [showFinished, setshowFinished] = useState(true);
   useEffect(() => {
     let todoString = localStorage.getItem("todos");
     if (todoString) {
@@ -20,6 +21,9 @@ function App() {
 
   const saveToLS = (params) => {
     localStorage.setItem("todos", JSON.stringify(todos));
+  };
+  const toggleFinished = (e) => {
+    setshowFinished(!showFinished);
   };
 
   const handleEdit = (e, id) => {
@@ -67,7 +71,7 @@ function App() {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto bg-violet-100 my-5 rounded-md p-5 min-h-[80vh] ">
+      <div className=" mx-3 md:container md:mx-auto bg-violet-100 my-5 rounded-xl p-5 min-h-[80vh] md:w-1/2 ">
         <h1 className="text-center text-xl font-bold ">
           iTask You can make task list here
         </h1>
@@ -81,51 +85,60 @@ function App() {
           />
           <button
             onClick={handleAdd}
-            className="bg-violet-800 hover:bg-violet-950 rounded-md px-2 py-1 text-white font-bold mx-6"
+            disabled={todo.length <= 3}
+            className="bg-violet-800 disabled:bg-violet-700 hover:bg-violet-950 rounded-md px-2 py-1 text-white font-bold mx-6"
           >
             Save
           </button>
         </div>
+        <input
+          onChange={toggleFinished}
+          type="checkbox"
+          checked={showFinished}
+        />{" "}
+        Show Finished
         <h2 className="text-lg font-bold">Your ToDos</h2>
         <div className="todos">
           {todos.length === 0 && <div className="m-5">No Todos to Display</div>}
           {todos.map((item) => {
             return (
-              <div
-                key={item.id}
-                className="todos flex w-1/2 justify-between my-3"
-              >
-                <div className="flex gap-5">
-                  <input
-                    name={item.id}
-                    onChange={handleCheckBox}
-                    type="checkbox"
-                    value={item.isCompleted}
-                    id=""
-                  />
-                  <div className={item.isCompleted ? "line-through" : ""}>
-                    {item.todo}
+              (showFinished || !item.isCompleted) && (
+                <div
+                  key={item.id}
+                  className="todos flex w-1/2 justify-between my-3"
+                >
+                  <div className="flex gap-5">
+                    <input
+                      name={item.id}
+                      onChange={handleCheckBox}
+                      type="checkbox"
+                      checked={item.isCompleted}
+                      id=""
+                    />
+                    <div className={item.isCompleted ? "line-through" : ""}>
+                      {item.todo}
+                    </div>
+                  </div>
+                  <div className="buttons flex h-full">
+                    <button
+                      onClick={(e) => {
+                        handleEdit(e, item.id);
+                      }}
+                      className="bg-violet-800 hover:bg-violet-950 rounded-md px-2 py-1 text-white font-bold mx-1"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        handleDelete(e, item.id);
+                      }}
+                      className="bg-violet-800 hover:bg-violet-950 rounded-md px-2 py-1 text-white font-bold mx-1"
+                    >
+                      <MdDelete />
+                    </button>
                   </div>
                 </div>
-                <div className="buttons">
-                  <button
-                    onClick={(e) => {
-                      handleEdit(e, item.id);
-                    }}
-                    className="bg-violet-800 hover:bg-violet-950 rounded-md px-2 py-1 text-white font-bold mx-1"
-                  >
-                    <FaEdit />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      handleDelete(e, item.id);
-                    }}
-                    className="bg-violet-800 hover:bg-violet-950 rounded-md px-2 py-1 text-white font-bold mx-1"
-                  >
-                    <MdDelete />
-                  </button>
-                </div>
-              </div>
+              )
             );
           })}
         </div>
