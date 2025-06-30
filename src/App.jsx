@@ -77,26 +77,35 @@ function App() {
         </h1>
         <div className="addTodo my-5">
           <h2 className="todos text-lg font-bold ">Add a Todo</h2>
-          <input
-            onChange={handleChange}
-            value={todo}
-            type="text"
-            className="border-1 rounded-md px-3 py-1 w-1/2"
-          />
-          <button
-            onClick={handleAdd}
-            disabled={todo.length <= 3}
-            className="bg-violet-800 disabled:bg-violet-700 hover:bg-violet-950 rounded-md px-2 py-1 text-white font-bold mx-6"
-          >
-            Save
-          </button>
+          <div className="flex gap-4">
+            <input
+              onChange={handleChange}
+              value={todo}
+              type="text"
+              className="border-1 rounded-md px-3 py-1 w-full"
+            />
+            <button
+              onClick={handleAdd}
+              disabled={todo.length <= 3}
+              className="bg-violet-800 disabled:bg-violet-700 hover:bg-violet-950 rounded-md px-2 py-1 text-white font-bold "
+            >
+              Save
+            </button>
+          </div>
         </div>
-        <input
-          onChange={toggleFinished}
-          type="checkbox"
-          checked={showFinished}
-        />{" "}
-        Show Finished
+        <div className="flex gap-2 my-4">
+          <input
+            id="show"
+            onChange={toggleFinished}
+            type="checkbox"
+            checked={showFinished}
+          />
+          <label htmlFor="show">Show Finished</label>
+        </div>
+        <div className=" w-[80%] my-4 mx-auto opacity-50">
+          <hr />
+        </div>
+
         <h2 className="text-lg font-bold">Your ToDos</h2>
         <div className="todos">
           {todos.length === 0 && <div className="m-5">No Todos to Display</div>}
@@ -105,7 +114,7 @@ function App() {
               (showFinished || !item.isCompleted) && (
                 <div
                   key={item.id}
-                  className="todos flex w-1/2 justify-between my-3"
+                  className="todos flex md:w-1/2 justify-between my-3"
                 >
                   <div className="flex gap-5">
                     <input
